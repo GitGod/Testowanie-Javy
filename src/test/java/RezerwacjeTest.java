@@ -1,14 +1,18 @@
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
 
 
 public class RezerwacjeTest {
@@ -51,7 +55,7 @@ public class RezerwacjeTest {
 
   @Test
     public void TestGetImie() {
-        assertEquals("Damian", osoba1.getImie());
+        assertThat(osoba1.getImie()).isEqualTo("Damian");
     }
 
     @Test
