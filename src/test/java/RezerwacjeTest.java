@@ -126,8 +126,41 @@ public class RezerwacjeTest {
         Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 18, stolik1);
         assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
     }
+  @Test
+    public void czyOtwartaPrzedCzasieTestFalse() {
+        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 9, stolik1);
+        assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
+    }
+   @Test
+    public void dodajRezerwacjeFalse() {
+        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 12, stolik1);
+        assertFalse(rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja));
+    }
 
-  
+    @Test
+    void nullAddReservationTest() {
+        Throwable exception = assertThrows(NullPointerException.class,
+                () -> {
+                    rezerwacje.dodajRezerwacje(null, null, null);
+                });
+    }
+    @Test
+    void TestAddReservationWithBadTimeExeprion() {
+        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 9, stolik1);
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> {
+                    rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja);
+                });
+    }
+
+    @Test
+    void TestExpeptionBadOsoba() {
+        Osoba osoba = new Osoba("Kamil", "oo@pl");
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> {
+                    rezerwacje.dodajRezerwacje(osoba, rezerwacja1, restauracja);
+                });
+    }
   
   
 
