@@ -57,24 +57,26 @@ public class RezerwacjeTest {
         assertThat(osoba1.getImie()).isEqualTo("Damian");
     }
 
-    @Test
-    public void TestRegexRmailFalse() {
-        Osoba osoba=new Osoba("Kamil","oo@pl");
-        assertFalse(rezerwacje.validOsoba(osoba));
-    }
+   
     @Test
     public void TestRegexImieFalse() {
         Osoba osoba=new Osoba("kamil2","oo@pl");
         assertFalse(rezerwacje.validOsoba(osoba));
     }
-    @Test
-    public void TestRegexRmailTrue() {
-        assertTrue(rezerwacje.validOsoba(osoba1));
-    }
-    @Test
+     @Test
     public void TestRegexImieTrue() {
         assertTrue(rezerwacje.validOsoba(osoba1));
     }
+   @Test
+    public void TestRegexEmailFalse() {
+        Osoba osoba=new Osoba("Kamil","oo@pl");
+        assertFalse(rezerwacje.validOsoba(osoba));
+    }
+    @Test
+    public void TestRegexEmailTrue() {
+        assertTrue(rezerwacje.validOsoba(osoba1));
+    }
+ 
      @Test
     public void TestGetEmail() {
         assertThat(osoba1.getEmail(), is("damian@o2.pl"));
@@ -83,6 +85,19 @@ public class RezerwacjeTest {
     public void TestGetEmailNot() {
         assertThat(osoba1.getEmail(), not("damia@o2.pl"));
     }
+  
+   @Test
+    public void toStringTest() {
+        assertEquals("Stolik numer 1:4osobowy: Czwartek godzina 12", rezerwacja1.toString());
+    }
+    @Test
+    public void TestWypisz() {
+        assertEquals(list.size(), rezerwacje.WypiszDlaKonkretnego(osoba1).size());
+    }
+  
+  
+  
+  
 
 
 
