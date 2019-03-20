@@ -49,7 +49,31 @@ public class RezerwacjeTest {
         list.add(rezerwacja2);
     }
 
-  
+  @Test
+    public void TestGetImie() {
+        assertEquals("Damian", osoba1.getImie());
+    }
+
+    @Test
+    public void TestRegexRmailFalse() {
+        Osoba osoba=new Osoba("Kamil","oo@pl");
+        assertFalse(rezerwacje.validOsoba(osoba));
+    }
+    @Test
+    public void TestRegexImieFalse() {
+        Osoba osoba=new Osoba("kamil2","oo@pl");
+        assertFalse(rezerwacje.validOsoba(osoba));
+    }
+    @Test
+    public void TestRegexRmailTrue() {
+        assertTrue(rezerwacje.validOsoba(osoba1));
+    }
+    @Test
+    public void TestRegexImieTrue() {
+        assertTrue(rezerwacje.validOsoba(osoba1));
+    }
+
+
   
 
 @AfterEach
