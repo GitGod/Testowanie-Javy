@@ -17,7 +17,7 @@ Restauracja restauracja;
         Stolik s1 = new Stolik(1,4);
         restauracja = new Restauracja();
         restauracja.readFile("Restauracja.txt");
-        rezerwacje.dodajRezerwacje(new Osoba("a","a"),new Rezerwacja("Czwartek",12,s1),restauracja);
+        rezerwacje.dodajRezerwacje(new Osoba("Kamil","a@o2.pl"),new Rezerwacja("Czwartek",12,s1),restauracja);
     }
         @Parameterized.Parameters
         public  static Iterable<Object[]> data() {
@@ -39,7 +39,7 @@ Restauracja restauracja;
 
         @Test
         public void test() {
-            assertEquals(fExpected, rezerwacje.dodajRezerwacje(new Osoba("a","a"),fInput,restauracja));
+            assertEquals(fExpected, rezerwacje.dodajRezerwacje(new Osoba("Kamil","a@o2.pl"),fInput,restauracja));
         }
     }
 
