@@ -94,7 +94,39 @@ public class RezerwacjeTest {
     public void TestWypisz() {
         assertEquals(list.size(), rezerwacje.WypiszDlaKonkretnego(osoba1).size());
     }
-  
+   @Test
+    public void testCzyWolnyFalse() {
+        assertFalse(rezerwacje.czyWolny(rezerwacja1));
+    }
+
+    @Test
+    public void testCzyWolnyTrue() {
+        assertTrue(rezerwacje.czyWolny(rezerwacjaNowa));
+    }
+
+    @Test
+    public void TestCompareTrue() {
+        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 12, stolik1);
+        assertTrue(rezerwacje.compare(rezerwacja1, rezerwacja4));
+    }
+
+    @Test
+    public void TestCompareFalse() {
+        assertFalse(rezerwacje.compare(rezerwacja1, rezerwacjaNowa));
+    }
+
+
+    @Test
+    public void czyOtwartaTestTrue() {
+        assertTrue(rezerwacje.sprawdzCzyotwarte(rezerwacja1, restauracja));
+    }
+
+    @Test
+    public void czyOtwartaPoCzasieTestFalse() {
+        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 18, stolik1);
+        assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
+    }
+
   
   
   
