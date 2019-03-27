@@ -6,3 +6,12 @@ Czwartek 10-17
 Piatek 10-17
 Sobota 10-15
 Niedziela 10-15
+Stoliki
+1 4
+2 4
+3 2
+4 3
+5 3
+6 3
+7 6
+8 4
