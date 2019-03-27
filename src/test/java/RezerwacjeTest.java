@@ -34,67 +34,76 @@ public class RezerwacjeTest {
     @BeforeEach
     public void setup() throws IOException {
         rezerwacje = new Rezerwacje();
+        rezerwacje.setPlik(false);
         osoba1 = new Osoba("Damian", "damian@o2.pl");
         osoba2 = new Osoba("Agnieszka", "agag@o2.pl");
-        stolik1 = new Stolik(1, 4);
-        stolik2 = new Stolik(2, 3);
-        rezerwacja1 = new Rezerwacja("Czwartek", 12, stolik1);
-        rezerwacja2 = new Rezerwacja("Czwartek", 13, stolik1);
-        rezerwacja3 = new Rezerwacja("Czwartek", 13, stolik2);
-        rezerwacjaNowa = new Rezerwacja("Czwartek", 14, stolik1);
         restauracja = new Restauracja();
         restauracja.readFile("Restauracja.txt");
-        rezerwacje.dodajRezerwacje(osoba1, rezerwacja1,restauracja);
-        rezerwacje.dodajRezerwacje(osoba1, rezerwacja2,restauracja);
-        rezerwacje.dodajRezerwacje(osoba2, rezerwacja3,restauracja);
+        rezerwacja1 = new Rezerwacja(LocalDate.of(2019, 1, 17), 12, 13, restauracja.stoliki.get(0));
+        rezerwacja2 = new Rezerwacja(LocalDate.of(2019, 1, 17), 13, 14, restauracja.stoliki.get(0));
+        rezerwacja3 = new Rezerwacja(LocalDate.of(2019, 1, 17), 13, 14, restauracja.stoliki.get(1));
+        rezerwacjaNowa = new Rezerwacja(LocalDate.of(2019, 1, 17), 14, 15, restauracja.stoliki.get(0));
+        rezerwacje.dodajRezerwacje(osoba1, rezerwacja1, restauracja);
+        rezerwacje.dodajRezerwacje(osoba1, rezerwacja2, restauracja);
+        rezerwacje.dodajRezerwacje(osoba2, rezerwacja3, restauracja);
+        rezerwacje.generujDane("plik.txt");
+        rezerwacje.odczytzPliku("plik.txt");
         list = new ArrayList();
         list.add(rezerwacja1);
         list.add(rezerwacja2);
     }
 
-  @Test
+ @Test
+    public void toStringTest() {
+        assertEquals("Stolik numer 1 4 osobowy 2019-01-17 godzina 12-13", rezerwacja1.toString());
+    }
+
+    @Test
     public void TestGetImie() {
         assertThat(osoba1.getImie()).isEqualTo("Damian");
     }
 
-   
     @Test
-    public void TestRegexImieFalse() {
-        Osoba osoba=new Osoba("kamil2","oo@pl");
-        assertFalse(rezerwacje.validOsoba(osoba));
-    }
-     @Test
-    public void TestRegexImieTrue() {
-        assertTrue(rezerwacje.validOsoba(osoba1));
-    }
-   @Test
-    public void TestRegexEmailFalse() {
-        Osoba osoba=new Osoba("Kamil","oo@pl");
-        assertFalse(rezerwacje.validOsoba(osoba));
-    }
-    @Test
-    public void TestRegexEmailTrue() {
-        assertTrue(rezerwacje.validOsoba(osoba1));
-    }
- 
-     @Test
     public void TestGetEmail() {
         assertThat(osoba1.getEmail(), is("damian@o2.pl"));
     }
+
     @Test
     public void TestGetEmailNot() {
         assertThat(osoba1.getEmail(), not("damia@o2.pl"));
     }
-  
-   @Test
-    public void toStringTest() {
-        assertEquals("Stolik numer 1:4osobowy: Czwartek godzina 12", rezerwacja1.toString());
+
+
+    @Test
+    public void TestRegexEmailFalse() {
+        Osoba osoba = new Osoba("Kamil", "oo@pl");
+        assertFalse(rezerwacje.validOsoba(osoba));
     }
+
+    @Test
+    public void TestRegexImieFalse() {
+        Osoba osoba = new Osoba("kamil2", "oo@o2.pl");
+        assertFalse(rezerwacje.validOsoba(osoba));
+    }
+
+    @Test
+    public void TestRegexRmailTrue() {
+        assertTrue(rezerwacje.validOsoba(osoba1));
+    }
+
+    @Test
+    public void TestRegexImieTrue() {
+        assertTrue(rezerwacje.validOsoba(osoba1));
+    }
+
+
     @Test
     public void TestWypisz() {
         assertEquals(list.size(), rezerwacje.WypiszDlaKonkretnego(osoba1).size());
     }
-   @Test
+
+
+    @Test
     public void testCzyWolnyFalse() {
         assertFalse(rezerwacje.czyWolny(rezerwacja1));
     }
@@ -106,7 +115,7 @@ public class RezerwacjeTest {
 
     @Test
     public void TestCompareTrue() {
-        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 12, stolik1);
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 12, 13, restauracja.stoliki.get(0));
         assertTrue(rezerwacje.compare(rezerwacja1, rezerwacja4));
     }
 
@@ -123,17 +132,19 @@ public class RezerwacjeTest {
 
     @Test
     public void czyOtwartaPoCzasieTestFalse() {
-        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 18, stolik1);
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 18, 19, restauracja.stoliki.get(0));
         assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
     }
-  @Test
+
+    @Test
     public void czyOtwartaPrzedCzasieTestFalse() {
-        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 9, stolik1);
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 9, 10, restauracja.stoliki.get(0));
         assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
     }
-   @Test
-    public void dodajRezerwacjeFalse() {
-        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 12, stolik1);
+
+    @Test
+    public void dodajRezerwacjeFalse() throws IOException {
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 12, 13, restauracja.stoliki.get(0));
         assertFalse(rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja));
     }
 
@@ -144,9 +155,18 @@ public class RezerwacjeTest {
                     rezerwacje.dodajRezerwacje(null, null, null);
                 });
     }
+
+    @Test
+    void nullAddReservationTest2() {
+        Throwable exception = assertThrows(NullPointerException.class,
+                () -> {
+                    rezerwacje.dodajRezerwacje(osoba1, null, null);
+                });
+    }
+
     @Test
     void TestAddReservationWithBadTimeExeprion() {
-        Rezerwacja rezerwacja4 = new Rezerwacja("Czwartek", 9, stolik1);
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 9, 10, restauracja.stoliki.get(0));
         Throwable exception = assertThrows(IllegalArgumentException.class,
                 () -> {
                     rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja);
@@ -161,15 +181,76 @@ public class RezerwacjeTest {
                     rezerwacje.dodajRezerwacje(osoba, rezerwacja1, restauracja);
                 });
     }
-  
-  
+
+    @Test
+    void TestAddReservationWithBadTimeStartEndExeprion() {
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 11, 10, restauracja.stoliki.get(0));
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> {
+                    rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja);
+                });
+    }
+
+    @Test
+    void dodajRezerwacjeTrueIsniejacaOsoba() throws IOException {
+        rezerwacje.setPlik(true);
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 4, 17), 11, 13, restauracja.stoliki.get(0));
+        assertTrue(rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja));
+        RandomAccessFile f = new RandomAccessFile("plik.txt", "rw");
+        long length = f.length() - 1;
+        byte b;
+        do {
+            length -= 1;
+            f.seek(length);
+            b = f.readByte();
+        } while (b != 10);
+        f.setLength(length + 1);
+        f.close();
+        rezerwacje.setPlik(false);
+    }
+
+    @Test
+    void dodajRezerwacjeTrueNowaOsoba() throws IOException {
+        rezerwacje.setPlik(true);
+        Osoba osoba421 = new Osoba("Kacper", "Dragon@o2.pl");
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 4, 18), 11, 13, restauracja.stoliki.get(0));
+        assertTrue(rezerwacje.dodajRezerwacje(osoba421, rezerwacja4, restauracja));
+        RandomAccessFile f = new RandomAccessFile("plik.txt", "rw");
+        long length = f.length() - 1;
+        byte b;
+        do {
+            length -= 1;
+            f.seek(length);
+            b = f.readByte();
+        } while (b != 10);
+        f.setLength(length + 1);
+        f.close();
+        rezerwacje.setPlik(false);
+    }
+    @Test
+    void WypiszPotwierdzenie() throws IOException {
+        assertEquals("Brawo udalo ci sie zarezerwowac stolik w naszej restauracji!\n" +
+                " Rezerwacja na :\n" +
+                "imie: Damian email: damian@o2.pl\n" +
+                "Informacje o rezerwacji: 2019-01-17 12-13 Stolik numer: 1 Liczba miejsc: 4", rezerwacje.generujPotwierdzenie2(osoba1,rezerwacja1));
+    }
 
 
 
-  
 
-@AfterEach
+    @AfterEach
     public void tearDown() {
 
+        rezerwacje.setPlik(true);
+        rezerwacje = null;
+        rezerwacja1 = null;
+        rezerwacja2 = null;
+        rezerwacja3 = null;
+        rezerwacjaNowa = null;
+        osoba1 = null;
+        osoba2 = null;
+        list = null;
+        restauracja = null;
     }
+
 }
