@@ -12,8 +12,8 @@ public class Rezerwacja {
         this.stolik = stolik;
     }
 
-    @Override
+   @Override
     public String toString() {
-        return "Stolik numer " + stolik.numer + ":" + stolik.liczbaMiejsc + "osobowy: " +  dzien + " godzina " + godzina;
+        return "Stolik numer " + stolik.numer + " " + stolik.liczbaMiejsc + " osobowy " + data + " godzina " + godzina + "-" + godzinaDo;
     }
 }
