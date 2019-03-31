@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.time.LocalDate;
@@ -22,48 +23,11 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 
+public class RezerwacjeTest extends TestBazowy{
 
 
-public class RezerwacjeTest {
-  
-  
 
-    private Rezerwacje rezerwacje;
-    private boolean expected;
-    private Rezerwacja rezerwacja1;
-    private Rezerwacja rezerwacja2;
-    private Rezerwacja rezerwacja3;
-    private Rezerwacja rezerwacjaNowa;
-    private Osoba osoba1;
-    private Osoba osoba2;
-    private Stolik stolik1;
-    private Stolik stolik2;
-    private ArrayList list;
-    private Restauracja restauracja;
-
-    @BeforeEach
-    public void setup() throws IOException {
-        rezerwacje = new Rezerwacje();
-        rezerwacje.setPlik(false);
-        osoba1 = new Osoba("Damian", "damian@o2.pl");
-        osoba2 = new Osoba("Agnieszka", "agag@o2.pl");
-        restauracja = new Restauracja();
-        restauracja.readFile("Restauracja.txt");
-        rezerwacja1 = new Rezerwacja(LocalDate.of(2019, 1, 17), 12, 13, restauracja.stoliki.get(0));
-        rezerwacja2 = new Rezerwacja(LocalDate.of(2019, 1, 17), 13, 14, restauracja.stoliki.get(0));
-        rezerwacja3 = new Rezerwacja(LocalDate.of(2019, 1, 17), 13, 14, restauracja.stoliki.get(1));
-        rezerwacjaNowa = new Rezerwacja(LocalDate.of(2019, 1, 17), 14, 15, restauracja.stoliki.get(0));
-        rezerwacje.dodajRezerwacje(osoba1, rezerwacja1, restauracja);
-        rezerwacje.dodajRezerwacje(osoba1, rezerwacja2, restauracja);
-        rezerwacje.dodajRezerwacje(osoba2, rezerwacja3, restauracja);
-        rezerwacje.generujDane("plik.txt");
-        rezerwacje.odczytzPliku("plik.txt");
-        list = new ArrayList();
-        list.add(rezerwacja1);
-        list.add(rezerwacja2);
-    }
-
- @Test
+    @Test
     public void toStringTest() {
         assertEquals("Stolik numer 1 4 osobowy 2019-01-17 godzina 12-13", rezerwacja1.toString());
     }
@@ -75,13 +39,14 @@ public class RezerwacjeTest {
 
     @Test
     public void TestGetEmail() {
-        assertThat(osoba1.getEmail(), is("damian@o2.pl"));
+        assertThat(osoba1.getEmail(), is("test89013@gmail.com"));
     }
 
     @Test
     public void TestGetEmailNot() {
         assertThat(osoba1.getEmail(), not("damia@o2.pl"));
     }
+
 
 
     @Test
@@ -94,6 +59,19 @@ public class RezerwacjeTest {
     public void TestRegexImieFalse() {
         Osoba osoba = new Osoba("kamil2", "oo@o2.pl");
         assertFalse(rezerwacje.validOsoba(osoba));
+    }
+
+    @Test
+    public void TestRegexGodzinaFalse() {
+       String godzinaod="11";
+       String godzinado="12.15";
+        assertFalse(rezerwacje.validGodzina(godzinaod,godzinado));
+    }
+    @Test
+    public void TestRegexGodzinaTrue() {
+        String godzinaod="11";
+        String godzinado="12.30";
+        assertTrue(rezerwacje.validGodzina(godzinaod,godzinado));
     }
 
     @Test
@@ -125,7 +103,7 @@ public class RezerwacjeTest {
 
     @Test
     public void TestCompareTrue() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 12, 13, restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "12", "13", restauracja.stoliki.get(0));
         assertTrue(rezerwacje.compare(rezerwacja1, rezerwacja4));
     }
 
@@ -142,19 +120,19 @@ public class RezerwacjeTest {
 
     @Test
     public void czyOtwartaPoCzasieTestFalse() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 18, 19, restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "18", "19", restauracja.stoliki.get(0));
         assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
     }
 
     @Test
     public void czyOtwartaPrzedCzasieTestFalse() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 9, 10, restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "9", "10", restauracja.stoliki.get(0));
         assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
     }
 
     @Test
-    public void dodajRezerwacjeFalse() throws IOException {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 12, 13, restauracja.stoliki.get(0));
+    public void dodajRezerwacjeFalse() throws IOException, MessagingException {
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "12", "13", restauracja.stoliki.get(0));
         assertFalse(rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja));
     }
 
@@ -176,7 +154,15 @@ public class RezerwacjeTest {
 
     @Test
     void TestAddReservationWithBadTimeExeprion() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 9, 10, restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "9", "10", restauracja.stoliki.get(0));
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> {
+                    rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja);
+                });
+    }
+    @Test
+    void TestAddReservationWithBadRegexTimeTimeExeprion() {
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "9.40", "10", restauracja.stoliki.get(0));
         Throwable exception = assertThrows(IllegalArgumentException.class,
                 () -> {
                     rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja);
@@ -194,7 +180,7 @@ public class RezerwacjeTest {
 
     @Test
     void TestAddReservationWithBadTimeStartEndExeprion() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), 11, 10, restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "11", "10", restauracja.stoliki.get(0));
         Throwable exception = assertThrows(IllegalArgumentException.class,
                 () -> {
                     rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja);
@@ -202,9 +188,9 @@ public class RezerwacjeTest {
     }
 
     @Test
-    void dodajRezerwacjeTrueIsniejacaOsoba() throws IOException {
+    void dodajRezerwacjeTrueIsniejacaOsoba() throws IOException, MessagingException {
         rezerwacje.setPlik(true);
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 4, 17), 11, 13, restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 4, 17), "11", "13", restauracja.stoliki.get(0));
         assertTrue(rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja));
         RandomAccessFile f = new RandomAccessFile("plik.txt", "rw");
         long length = f.length() - 1;
@@ -220,10 +206,10 @@ public class RezerwacjeTest {
     }
 
     @Test
-    void dodajRezerwacjeTrueNowaOsoba() throws IOException {
+    void dodajRezerwacjeTrueNowaOsoba() throws IOException, MessagingException {
         rezerwacje.setPlik(true);
         Osoba osoba421 = new Osoba("Kacper", "Dragon@o2.pl");
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 4, 18), 11, 13, restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 4, 18), "11", "13", restauracja.stoliki.get(0));
         assertTrue(rezerwacje.dodajRezerwacje(osoba421, rezerwacja4, restauracja));
         RandomAccessFile f = new RandomAccessFile("plik.txt", "rw");
         long length = f.length() - 1;
@@ -241,7 +227,7 @@ public class RezerwacjeTest {
     void WypiszPotwierdzenie() throws IOException {
         assertEquals("Brawo udalo ci sie zarezerwowac stolik w naszej restauracji!\n" +
                 " Rezerwacja na :\n" +
-                "imie: Damian email: damian@o2.pl\n" +
+                "imie: Damian email: test89013@gmail.com\n" +
                 "Informacje o rezerwacji: 2019-01-17 12-13 Stolik numer: 1 Liczba miejsc: 4", rezerwacje.generujPotwierdzenie2(osoba1,rezerwacja1));
     }
 
