@@ -1,3 +1,4 @@
+import javax.mail.MessagingException;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
@@ -6,13 +7,14 @@ public class Rezerwacje {
     HashMap<String, ArrayList> rezerwacje = new HashMap();
     private static final String EMAIL_REGEX = ".+\\@.+\\..+";
     private static final String IMIE_REGEX = "[A-Z][a-z]*";
+    private static final String GODZINA_REGEX = "[1-2]?[0-9]{1}(\\.30)?";
     private boolean plik = true;
 
     public void setPlik(boolean plik) {
         this.plik = plik;
     }
 
-    public boolean dodajRezerwacje(Osoba osoba, Rezerwacja rezerwacja, Restauracja restauracja) throws IOException {
+    public boolean dodajRezerwacje(Osoba osoba, Rezerwacja rezerwacja, Restauracja restauracja) throws IOException, MessagingException {
         if (osoba == null || rezerwacja == null) {
             throw new NullPointerException();
         }
@@ -22,9 +24,11 @@ public class Rezerwacje {
         if (!validOsoba(osoba)) {
             throw new IllegalArgumentException();
         }
-        if (rezerwacja.godzinaDo <= rezerwacja.godzina) {
+
+        if (Double.parseDouble(rezerwacja.godzinaDo) <= Double.parseDouble(rezerwacja.godzina) || !validGodzina(rezerwacja.godzina,rezerwacja.godzinaDo)) {
             throw new IllegalArgumentException();
         }
+
         PrintWriter plik2 = null;
 
 
@@ -34,6 +38,8 @@ public class Rezerwacje {
                 lista.add(rezerwacja);
                 rezerwacje.put(osoba.getEmail(), lista);
                 if (plik == true) {
+                    SendMail s1 = new SendMail();
+//                    s1.generateAndSendEmail(osoba,rezerwacja);
                     try {
                         plik2 = new PrintWriter(new FileWriter("plik.txt", true));
                         plik2.println(osoba.getEmail() + " " + rezerwacja.toString());
@@ -44,12 +50,15 @@ public class Rezerwacje {
                     }
                 }
                 generujPotwierdzenie(osoba, rezerwacja);
+
                 return true;
             } else {
                 ArrayList lista = new ArrayList();
                 lista.add(rezerwacja);
                 rezerwacje.put(osoba.getEmail(), lista);
                 if (plik == true) {
+                    SendMail s1 = new SendMail();
+//                    s1.generateAndSendEmail(osoba,rezerwacja);
                     try {
                         plik2 = new PrintWriter(new FileWriter("plik.txt", true));
                         plik2.println(osoba.getEmail() + " " + rezerwacja.toString());
@@ -78,7 +87,7 @@ public class Rezerwacje {
         return true;
     }
 
-    public void odczytzPliku(String filePath) throws IOException {
+    public void odczytzPliku(String filePath) throws IOException, MessagingException {
         FileReader fileReader = new FileReader(filePath);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         HashMap emaile = new HashMap();
@@ -99,8 +108,8 @@ public class Rezerwacje {
                     new Rezerwacja(LocalDate.of(Integer.parseInt(podzielone3[0])
                             , Integer.parseInt(podzielone3[1]),
                             Integer.parseInt(podzielone3[2])),
-                            Integer.parseInt(podzielone2[0]),
-                            Integer.parseInt(podzielone2[1]),
+                            podzielone2[0],
+                            podzielone2[1],
                             new Stolik(Integer.parseInt(podzielone[3]),
                                     Integer.parseInt(podzielone[4]))), res);
             line = bufferedReader.readLine();
@@ -183,7 +192,7 @@ public class Rezerwacje {
         Rezerwacja p1 = (Rezerwacja) o1;
         Rezerwacja p2 = (Rezerwacja) o2;
         // if last names are the same compare first names
-        if (p1.data.equals(p2.data) && p1.stolik.numer == p2.stolik.numer && (p1.godzina == p2.godzina || p1.godzinaDo == p2.godzinaDo || (p1.godzina < p2.godzina && p1.godzinaDo > p2.godzina) || (p1.godzina > p2.godzina && p1.godzina < p2.godzinaDo))) {
+        if (p1.data.equals(p2.data) && p1.stolik.numer == p2.stolik.numer && (p1.godzina.equals(p2.godzina) || p1.godzinaDo.equals(p2.godzinaDo) || (Double.parseDouble(p1.godzina) < Double.parseDouble(p2.godzina) && Double.parseDouble(p1.godzinaDo) > Double.parseDouble(p2.godzina)) || (Double.parseDouble(p1.godzina) > Double.parseDouble(p2.godzina) && Double.parseDouble(p1.godzina) < Double.parseDouble(p2.godzinaDo)))) {
             return true;
         }
         return false;
@@ -229,7 +238,7 @@ public class Rezerwacje {
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
         String godzinki = restauracja.godziny_otwarcia.get(rezerwacja.data.getDayOfWeek().toString());
         String podzielone[] = godzinki.split("-");
-        if (rezerwacja.godzina < Integer.parseInt(podzielone[0]) || rezerwacja.godzina >= Integer.parseInt(podzielone[1])) {
+        if (Double.parseDouble(rezerwacja.godzina) < Integer.parseInt(podzielone[0]) || Double.parseDouble(rezerwacja.godzina) >= Integer.parseInt(podzielone[1])) {
             return false;
         }
         return true;
@@ -242,7 +251,12 @@ public class Rezerwacje {
         }
         return true;
     }
+    public boolean validGodzina(String godzinaOd, String godzinaDo){
+        if(!godzinaOd.matches(GODZINA_REGEX) || !godzinaDo.matches(GODZINA_REGEX)){
+            return false;
+        }
+        return true;
+    }
 
 
-    
 }
