@@ -1,35 +1,30 @@
-import org.junit.Before;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.assertj.core.api.Assertions.*;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 
-public class RezerwacjeTest extends TestBazowy{
+public class RezerwacjeTest extends BazeTest {
 
 
 
     @Test
     public void toStringTest() {
-        assertEquals("Stolik numer 1 4 osobowy 2019-01-17 godzina 12-13", rezerwacja1.toString());
+        assertEquals("Stolik numer 1 4 osobowy 2022-01-17 godzina 12-13", rezerwacja1.toString());
     }
 
     @Test
@@ -103,7 +98,7 @@ public class RezerwacjeTest extends TestBazowy{
 
     @Test
     public void TestCompareTrue() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "12", "13", restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2022, 1, 17), "12", "13", restauracja.stoliki.get(0));
         assertTrue(rezerwacje.compare(rezerwacja1, rezerwacja4));
     }
 
@@ -120,19 +115,19 @@ public class RezerwacjeTest extends TestBazowy{
 
     @Test
     public void czyOtwartaPoCzasieTestFalse() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "18", "19", restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2022, 1, 17), "18", "19", restauracja.stoliki.get(0));
         assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
     }
 
     @Test
     public void czyOtwartaPrzedCzasieTestFalse() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "9", "10", restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2022, 1, 17), "9", "10", restauracja.stoliki.get(0));
         assertFalse(rezerwacje.sprawdzCzyotwarte(rezerwacja4, restauracja));
     }
 
     @Test
     public void dodajRezerwacjeFalse() throws IOException, MessagingException {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "12", "13", restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2022, 1, 17), "12", "13", restauracja.stoliki.get(0));
         assertFalse(rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja));
     }
 
@@ -180,7 +175,15 @@ public class RezerwacjeTest extends TestBazowy{
 
     @Test
     void TestAddReservationWithBadTimeStartEndExeprion() {
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 17), "11", "10", restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2022, 1, 17), "11", "10", restauracja.stoliki.get(0));
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> {
+                    rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja);
+                });
+    }
+    @Test
+    void TestAddReservationWithBadDate() {
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 1, 11), "11", "14", restauracja.stoliki.get(0));
         Throwable exception = assertThrows(IllegalArgumentException.class,
                 () -> {
                     rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja);
@@ -190,7 +193,7 @@ public class RezerwacjeTest extends TestBazowy{
     @Test
     void dodajRezerwacjeTrueIsniejacaOsoba() throws IOException, MessagingException {
         rezerwacje.setPlik(true);
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 4, 17), "11", "13", restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2022, 4, 17), "11", "13", restauracja.stoliki.get(0));
         assertTrue(rezerwacje.dodajRezerwacje(osoba1, rezerwacja4, restauracja));
         RandomAccessFile f = new RandomAccessFile("plik.txt", "rw");
         long length = f.length() - 1;
@@ -209,7 +212,7 @@ public class RezerwacjeTest extends TestBazowy{
     void dodajRezerwacjeTrueNowaOsoba() throws IOException, MessagingException {
         rezerwacje.setPlik(true);
         Osoba osoba421 = new Osoba("Kacper", "Dragon@o2.pl");
-        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2019, 4, 18), "11", "13", restauracja.stoliki.get(0));
+        Rezerwacja rezerwacja4 = new Rezerwacja(LocalDate.of(2022, 4, 18), "11", "13", restauracja.stoliki.get(0));
         assertTrue(rezerwacje.dodajRezerwacje(osoba421, rezerwacja4, restauracja));
         RandomAccessFile f = new RandomAccessFile("plik.txt", "rw");
         long length = f.length() - 1;
@@ -228,7 +231,7 @@ public class RezerwacjeTest extends TestBazowy{
         assertEquals("Brawo udalo ci sie zarezerwowac stolik w naszej restauracji!\n" +
                 " Rezerwacja na :\n" +
                 "imie: Damian email: test89013@gmail.com\n" +
-                "Informacje o rezerwacji: 2019-01-17 12-13 Stolik numer: 1 Liczba miejsc: 4", rezerwacje.generujPotwierdzenie2(osoba1,rezerwacja1));
+                "Informacje o rezerwacji: 2022-01-17 12-13 Stolik numer: 1 Liczba miejsc: 4", rezerwacje.generujPotwierdzenie2(osoba1,rezerwacja1));
     }
 
 
