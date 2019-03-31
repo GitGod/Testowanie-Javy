@@ -1,6 +1,3 @@
-import javax.mail.MessagingException;
-import java.io.*;
-import java.time.LocalDate;
 import java.util.*;
 
 public class Rezerwacje {
@@ -9,9 +6,14 @@ public class Rezerwacje {
     private static final String IMIE_REGEX = "[A-Z][a-z]*";
     private static final String GODZINA_REGEX = "[1-2]?[0-9]{1}(\\.30)?";
     private boolean plik = true;
+    private boolean odczyt = false;
 
     public void setPlik(boolean plik) {
         this.plik = plik;
+    }
+
+    public void setOdczyt(boolean odczyt) {
+        this.odczyt = odczyt;
     }
 
     public boolean dodajRezerwacje(Osoba osoba, Rezerwacja rezerwacja, Restauracja restauracja) throws IOException, MessagingException {
@@ -28,7 +30,11 @@ public class Rezerwacje {
         if (Double.parseDouble(rezerwacja.godzinaDo) <= Double.parseDouble(rezerwacja.godzina) || !validGodzina(rezerwacja.godzina,rezerwacja.godzinaDo)) {
             throw new IllegalArgumentException();
         }
-
+        if(odczyt==false) {
+            if (LocalDate.now().compareTo(rezerwacja.data) >= 0) {
+                throw new IllegalArgumentException();
+            }
+        }
         PrintWriter plik2 = null;
 
 
