@@ -4,13 +4,13 @@ import java.util.Date;
 public class Rezerwacja {
     public String dzien;
     public LocalDate data;
-    public int godzina;
-    public int godzinaDo;
+    public String godzina;
+    public String godzinaDo;
     public Stolik stolik;
 
-    public Rezerwacja(LocalDate data, int godzina, int godzinaDo, Stolik stolik) {
+
+    public Rezerwacja(LocalDate data, String godzina, String godzinaDo, Stolik stolik) {
         this.data = data;
-        this.dzien = dzien;
         this.godzina = godzina;
         this.godzinaDo = godzinaDo;
         this.stolik = stolik;
@@ -21,4 +21,5 @@ public class Rezerwacja {
         return "Stolik numer " + stolik.numer + " " + stolik.liczbaMiejsc + " osobowy " + data + " godzina " + godzina + "-" + godzinaDo;
     }
 }
+
 
